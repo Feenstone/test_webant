@@ -36,11 +36,7 @@ class _PopularGalleryGridState extends State<PopularGalleryGrid>{
   final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey = new GlobalKey<RefreshIndicatorState>();
 
   Future<List<Photo>> _fetchPhotos() async {
-    setState(() {
-      _isLoading = true;
-    });
     try {
-      developer.log('fetch photos');
       final response = await http.get(
           galleryUrl + page.toString() + "&limit=10");
       Map<String, dynamic> decodedJson = json.decode(response.body);
@@ -64,12 +60,13 @@ class _PopularGalleryGridState extends State<PopularGalleryGrid>{
   void initState(){
     data.clear();
     page = 1;
-    _fetchPhotos();
     _scrollController.addListener(() {
       if (_scrollController.position.pixels ==
           _scrollController.position.maxScrollExtent) {
-        developer.log('scroll controller');
           page++;
+        setState(() {
+          _isLoading = true;
+        });
           _fetchPhotos();
       }
     });
@@ -93,7 +90,6 @@ class _PopularGalleryGridState extends State<PopularGalleryGrid>{
           body: StreamBuilder<List<Photo>>(
             stream: _photosStreamController.stream,
             builder:(context, snapshot){
-              developer.log('builder');
               if (snapshot.hasData || data.isNotEmpty){
                 return Column(
                   children: <Widget> [

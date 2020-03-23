@@ -37,11 +37,7 @@ class _NewGalleryGridState extends State<NewGalleryGrid> {
       RefreshIndicatorState>();
 
   Future<List<Photo>> _fetchPhotos() async {
-    setState(() {
-      _isLoading = true;
-    });
     try {
-      developer.log('fetch photos');
       final response = await http.get(
           galleryUrl + page.toString() + "&limit=10");
       Map<String, dynamic> decodedJson = json.decode(response.body);
@@ -65,12 +61,13 @@ class _NewGalleryGridState extends State<NewGalleryGrid> {
   void initState() {
     data.clear();
     page = 1;
-    _fetchPhotos();
     _scrollController.addListener(() {
       if (_scrollController.position.pixels ==
           _scrollController.position.maxScrollExtent) {
-        developer.log('scroll controller');
         page++;
+        setState(() {
+          _isLoading = true;
+        });
         _fetchPhotos();
       }
     });
@@ -94,7 +91,6 @@ class _NewGalleryGridState extends State<NewGalleryGrid> {
           body: StreamBuilder<List<Photo>>(
             stream: _photosStreamController.stream,
             builder: (context, snapshot) {
-              developer.log('builder');
               switch (snapshot.connectionState) {
                 case ConnectionState.none:
                 case ConnectionState.waiting:
