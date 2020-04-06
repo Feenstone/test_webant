@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:test_webant/Resources/AppColors/app_colors.dart';
+import 'package:test_webant/Resources/app_colors.dart';
+import 'package:test_webant/Resources/app_strings.dart';
 import 'package:test_webant/Ui/Scenes/single_image.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
@@ -25,7 +26,7 @@ class CustomGridView{
          margin: EdgeInsets.all(8.0),
          child:GestureDetector(
            child: CachedNetworkImage(
-             imageUrl: ('http://gallery.dev.webant.ru/media/' + data[index].image),
+             imageUrl: (AppStrings().displayImageLink + data[index].image),
              fit: BoxFit.cover,
              placeholder: (context, url) => Center(child: CircularProgressIndicator()),
              errorWidget: (context, url, error) => Icon(Icons.error),

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:test_webant/Resources/AppColors/app_colors.dart';
+import 'package:test_webant/Resources/app_colors.dart';
 
 
 class NoInternetConnection{
