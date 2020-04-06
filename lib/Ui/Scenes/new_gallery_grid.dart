@@ -2,16 +2,12 @@ import 'dart:convert';
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'dart:developer' as developer;
-import 'package:test_webant/data/photoEntity.dart';
+import 'package:test_webant/Ui/CustomWidgets/no_internet_connection_widget.dart';
+import 'package:test_webant/models/photo_entity.dart';
 import 'package:http/http.dart' as http;
-import 'package:test_webant/data/SingleImage.dart';
-import 'package:test_webant/UI/commonUi.dart';
-import 'package:cached_network_image/cached_network_image.dart';
-
-final galleryUrl = "http://gallery.dev.webant.ru/api/photos?new=true&page=";
-
-int page = 1;
+import 'package:test_webant/Ui/CustomWidgets/custom_gridview.dart';
+import 'package:test_webant/Resources/AppColors/app_colors.dart';
+import 'package:test_webant/Resources/AppStrings/app_strings.dart';
 
 class NewGalleryGrid extends StatefulWidget{
   @override
@@ -31,6 +27,8 @@ class _NewGalleryGridState extends State<NewGalleryGrid> {
 
   bool _isLoading = false;
 
+  int page = 1;
+
   int maxPage;
 
   final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey = new GlobalKey<
@@ -39,7 +37,7 @@ class _NewGalleryGridState extends State<NewGalleryGrid> {
   Future<List<Photo>> _fetchPhotos() async {
     try {
       final response = await http.get(
-          galleryUrl + page.toString() + "&limit=10");
+          AppStrings().newGalleryUrl + page.toString() + "&limit=10");
       Map<String, dynamic> decodedJson = json.decode(response.body);
       maxPage = decodedJson['countOfPages'] as int;
       List photos = decodedJson['data'] as List;
@@ -83,7 +81,7 @@ class _NewGalleryGridState extends State<NewGalleryGrid> {
     return Scaffold(
       appBar: AppBar(
         title: Text('New',
-          style: TextStyle(color: Color(0xFF2F1767),)),
+          style: TextStyle(color: AppColors.titleColor,)),
         backgroundColor: Colors.white,
         elevation: 0,
       ),
@@ -100,26 +98,26 @@ class _NewGalleryGridState extends State<NewGalleryGrid> {
                 case ConnectionState.active:
                 case ConnectionState.done:
                   if (snapshot.hasError) {
-                    return CommonUI.noInternetConnection();
+                    return NoInternetConnection().noInternetConnection();
                   }
                   else if (snapshot.hasData || data.isNotEmpty) {
                     return Column(
                         children: <Widget> [
                           Flexible(
                             fit: FlexFit.loose,
-                         child: RefreshIndicator(
-                      key: _refreshIndicatorKey,
-                      onRefresh: _refresh,
-                      child: _photoGridView(snapshot.data ?? data),
+                            child: RefreshIndicator(
+                              key: _refreshIndicatorKey,
+                              onRefresh: _refresh,
+                              child: CustomGridView().photoGridView(snapshot.data ?? data, _scrollController),
+                            ),
                           ),
-                    ),
                           Visibility(
                             visible: _isLoading&&page<maxPage,
                             child: Center(
                               child: LinearProgressIndicator(),
+                              ),
                             ),
-                          )
-              ],
+                          ],
                     );
                   }
               }
@@ -143,46 +141,5 @@ class _NewGalleryGridState extends State<NewGalleryGrid> {
     super.dispose();
     _scrollController.dispose();
     _photosStreamController?.close();
-  }
-
-  GridView _photoGridView(data) {
-    return GridView.builder(
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        childAspectRatio: 180 / 128,
-        mainAxisSpacing: 4.0,
-        crossAxisSpacing: 4.0,
-      ),
-      itemCount: data.length,
-      itemBuilder: (context, index) {
-          return Card(
-            semanticContainer: true,
-            elevation: 5.7,
-            clipBehavior: Clip.antiAliasWithSaveLayer,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8),
-            ),
-            margin: EdgeInsets.all(8.0),
-            child: GestureDetector(
-              child: CachedNetworkImage(
-               imageUrl: ('http://gallery.dev.webant.ru/media/' + data[index].image),
-                fit: BoxFit.cover,
-                placeholder: (context, url) => Center(child: CircularProgressIndicator()),
-                errorWidget: (context, url, error) => Icon(Icons.error),
-              ),
-              onTap: () => _navigateToImage(context, data[index].id),
-            ),
-          );
-      },
-      controller: _scrollController,
-    );
-  }
-
-  void _navigateToImage(BuildContext context, int id) {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => SingleImage(imageId: id),
-      ),
-    );
   }
 }

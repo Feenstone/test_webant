@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:test_webant/galleryGrid.dart';
-import 'package:test_webant/PopularGalleryGrid.dart';
+import 'package:test_webant/Ui/Scenes/new_gallery_grid.dart';
+import 'package:test_webant/Ui/Scenes/popular_gallery_grid.dart';
+import 'package:test_webant/Resources/AppColors/app_colors.dart';
 
 void main() => runApp(MyApp());
  
@@ -62,7 +63,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       ),
       bottomNavigationBar: new Theme(
         data: Theme.of(context).copyWith(
-          canvasColor: const Color(0xFFFFFFFF),
+          canvasColor: Colors.white,
         ),
         child: BottomNavigationBar(
           items: const <BottomNavigationBarItem>[
@@ -70,18 +71,18 @@ class _DashboardScreenState extends State<DashboardScreen> {
               icon: Icon(Icons.new_releases),
               title: Text('New',
               style: TextStyle(
-                color: Color(0xFF8C8C8C)
+                color: AppColors.bottomNavBarTextColor
               ),),
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.favorite),
               title: Text('Popular',
               style: TextStyle(
-                color: Color(0xFF8C8C8C)
+                color: AppColors.bottomNavBarTextColor
               ),),
             ),
           ],
-          selectedItemColor: Color(0xFFED5992),
+          selectedItemColor: AppColors.activeBottomNavBarIconColor,
           onTap: navigationTapped,
           currentIndex: _page,
         ),
