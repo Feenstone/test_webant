@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:test_webant/Resources/app_colors.dart';
+import 'package:test_webant/resources/app_colors.dart';
+import 'package:test_webant/resources/app_strings.dart';
 
 
 class NoInternetConnection{
@@ -13,13 +14,13 @@ class NoInternetConnection{
           child: Container(
               height: 150,
               width: 150,
-              child: Image(image: AssetImage('assets/no_internet.png'), fit: BoxFit.fill,)
+              child: Image(image: AssetImage(AppStrings().noInternetAssetRoot), fit: BoxFit.fill,)
           ),
         ),
         SizedBox(height: 8),
         Align(
           alignment: Alignment.center,
-          child: Text('Oh shucks!',
+          child: Text(AppStrings().errorTextHeader,
             style: TextStyle(
               fontSize: 20.0,
               color: AppColors.titleColor,
@@ -29,11 +30,11 @@ class NoInternetConnection{
         SizedBox(height: 8),
         Align(
           alignment: Alignment.center,
-          child: Text(('Slow or no internet connection.'+'\n'+'Please check your internet settings'),
+          child: Text(AppStrings().errorTextDescription,
             textAlign: TextAlign.center,
             style: TextStyle(
                 fontSize: 12,
-                color: Color(0xFF4A4A4A)
+                color: AppColors.errorDescriptionTextColor,
             ),
           ),
         )

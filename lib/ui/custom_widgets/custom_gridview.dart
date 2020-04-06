@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:test_webant/Resources/app_colors.dart';
 import 'package:test_webant/Resources/app_strings.dart';
 import 'package:test_webant/Ui/Scenes/single_image.dart';
 import 'package:cached_network_image/cached_network_image.dart';

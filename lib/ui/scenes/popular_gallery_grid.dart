@@ -3,16 +3,12 @@ import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:test_webant/Resources/AppColors/app_colors.dart';
-import 'package:test_webant/Resources/AppStrings/app_strings.dart';
-import 'package:test_webant/Ui/CustomWidgets/no_internet_connection_widget.dart';
+import 'package:test_webant/resources/app_colors.dart';
+import 'package:test_webant/resources/app_strings.dart';
+import 'package:test_webant/ui/custom_widgets/no_internet_connection_widget.dart';
 import 'package:test_webant/models/photo_entity.dart';
 import 'package:http/http.dart' as http;
-import 'package:test_webant/Ui/CustomWidgets/custom_gridview.dart';
-
-int page = 1;
-
-int maxPage;
+import 'package:test_webant/ui/custom_widgets/custom_gridview.dart';
 
 class PopularGalleryGrid extends StatefulWidget{
   @override
@@ -22,6 +18,10 @@ class PopularGalleryGrid extends StatefulWidget{
 }
 
 class _PopularGalleryGridState extends State<PopularGalleryGrid>{
+
+  int page = 1;
+
+  int maxPage;
 
   bool _isLoading = false;
 
@@ -79,7 +79,7 @@ class _PopularGalleryGridState extends State<PopularGalleryGrid>{
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Popular',
+        title: Text(AppStrings().popularGalleryGridTitle,
           style: TextStyle(color: AppColors.titleColor,)),
         backgroundColor: Colors.white,
         elevation: 0,

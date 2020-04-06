@@ -2,12 +2,12 @@ import 'dart:convert';
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:test_webant/Ui/CustomWidgets/no_internet_connection_widget.dart';
+import 'package:test_webant/resources/app_strings.dart';
+import 'package:test_webant/ui/custom_widgets/no_internet_connection_widget.dart';
 import 'package:test_webant/models/photo_entity.dart';
 import 'package:http/http.dart' as http;
-import 'package:test_webant/Ui/CustomWidgets/custom_gridview.dart';
-import 'package:test_webant/Resources/AppColors/app_colors.dart';
-import 'package:test_webant/Resources/AppStrings/app_strings.dart';
+import 'package:test_webant/ui/custom_widgets/custom_gridview.dart';
+import 'package:test_webant/resources/app_colors.dart';
 
 class NewGalleryGrid extends StatefulWidget{
   @override
@@ -80,7 +80,7 @@ class _NewGalleryGridState extends State<NewGalleryGrid> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('New',
+        title: Text(AppStrings().newGalleryGridTitle,
           style: TextStyle(color: AppColors.titleColor,)),
         backgroundColor: Colors.white,
         elevation: 0,

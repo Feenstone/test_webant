@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:test_webant/Ui/Scenes/new_gallery_grid.dart';
-import 'package:test_webant/Ui/Scenes/popular_gallery_grid.dart';
-import 'package:test_webant/Resources/AppColors/app_colors.dart';
+import 'package:test_webant/resources/app_strings.dart';
+import 'package:test_webant/ui/Scenes/new_gallery_grid.dart';
+import 'package:test_webant/ui/Scenes/popular_gallery_grid.dart';
+import 'package:test_webant/resources/app_colors.dart';
 
 void main() => runApp(MyApp());
  
@@ -9,15 +10,13 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
       return MaterialApp(
-        home: DashboardScreen(title: 'Gallery'),
+        home: DashboardScreen(),
       );
     }
 }
 
 class DashboardScreen extends StatefulWidget{
-  DashboardScreen({Key key, this.title}) : super(key: key);
-
-  final String title;
+  DashboardScreen({Key key}) : super(key: key);
 
   @override
   _DashboardScreenState createState() => new _DashboardScreenState();
@@ -69,14 +68,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
           items: const <BottomNavigationBarItem>[
             BottomNavigationBarItem(
               icon: Icon(Icons.new_releases),
-              title: Text('New',
+              title: Text(AppStrings.firstBottomNavigationBarItemTitle,
               style: TextStyle(
                 color: AppColors.bottomNavBarTextColor
               ),),
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.favorite),
-              title: Text('Popular',
+              title: Text(AppStrings.secondBottomNavigationBarItemTitle,
               style: TextStyle(
                 color: AppColors.bottomNavBarTextColor
               ),),
