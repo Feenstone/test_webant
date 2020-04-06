@@ -10,6 +10,8 @@ class AppStrings{
   final errorTextDescription = 'Slow or no internet connection.'+'\n'+'Please check your internet settings';
   final noInternetAssetRoot = 'assets/no_internet.png';
   final exceptionText = "Failed to load photo from API";
+  final limit = "&limit=10";
   static const firstBottomNavigationBarItemTitle = "New";
   static const secondBottomNavigationBarItemTitle = "Popular";
+
 }

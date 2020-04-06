@@ -37,7 +37,7 @@ class _NewGalleryGridState extends State<NewGalleryGrid> {
   Future<List<Photo>> _fetchPhotos() async {
     try {
       final response = await http.get(
-          AppStrings().newGalleryUrl + page.toString() + "&limit=10");
+          AppStrings().newGalleryUrl + page.toString() + AppStrings().limit);
       Map<String, dynamic> decodedJson = json.decode(response.body);
       maxPage = decodedJson['countOfPages'] as int;
       List photos = decodedJson['data'] as List;
