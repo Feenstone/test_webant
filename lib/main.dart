@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:test_webant/resources/app_strings.dart';
-import 'package:test_webant/ui/Scenes/new_gallery_grid.dart';
-import 'package:test_webant/ui/Scenes/popular_gallery_grid.dart';
 import 'package:test_webant/resources/app_colors.dart';
+import 'package:test_webant/ui/scenes/popular_gallery_grid.dart';
+
 
 void main() => runApp(MyApp());
  
@@ -52,14 +52,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: PageView(
-        children: [
-          NewGalleryGrid(),
-          PopularGalleryGrid(),
-        ],
-        onPageChanged: onPageChanged,
-        controller: _pageController,
-      ),
+        body: PageView(
+          children: [
+            GalleryGrid(AppStrings().newGalleryUrl, AppStrings().popularGalleryGridTitle),
+            GalleryGrid(AppStrings().popularGalleryUrl,AppStrings().popularGalleryGridTitle),
+          ],
+          onPageChanged: onPageChanged,
+          controller: _pageController,
+        ),
       bottomNavigationBar: new Theme(
         data: Theme.of(context).copyWith(
           canvasColor: Colors.white,

@@ -1,138 +1,91 @@
-import 'dart:convert';
-import 'dart:async';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:test_webant/resources/app_colors.dart';
 import 'package:test_webant/resources/app_strings.dart';
 import 'package:test_webant/ui/custom_widgets/no_internet_connection_widget.dart';
 import 'package:test_webant/models/photo_entity.dart';
-import 'package:http/http.dart' as http;
-import 'package:test_webant/ui/custom_widgets/custom_gridview.dart';
+import 'package:test_webant/ui/custom_widgets/photo_gridview.dart';
+import 'package:test_webant/bloc/photo_bloc.dart';
 
-class PopularGalleryGrid extends StatefulWidget{
+class GalleryGrid extends StatefulWidget {
+
+ final String url;
+ final String title;
+
+  GalleryGrid(this.url,this.title);
+
   @override
-  State<StatefulWidget> createState(){
-    return _PopularGalleryGridState();
+  State<StatefulWidget> createState() {
+    return _GalleryGridState();
   }
 }
 
-class _PopularGalleryGridState extends State<PopularGalleryGrid>{
-
-  int page = 1;
-
-  int maxPage;
-
-  bool _isLoading = false;
-
-  List<Photo> data = new List<Photo>();
-
+class _GalleryGridState extends State<GalleryGrid> {
   ScrollController _scrollController = new ScrollController();
 
-  StreamController<List<Photo>> _photosStreamController = StreamController<List<Photo>>.broadcast();
+  final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
+      new GlobalKey<RefreshIndicatorState>();
 
-  final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey = new GlobalKey<RefreshIndicatorState>();
-
-  Future<List<Photo>> _fetchPhotos() async {
-    try {
-      final response = await http.get(
-          AppStrings().popularGalleryUrl + page.toString() + AppStrings().limit);
-      Map<String, dynamic> decodedJson = json.decode(response.body);
-      maxPage = decodedJson['countOfPages'] as int;
-      List photos = decodedJson['data'] as List;
-      List<Photo> result = (photos.map((photo) => Photo.fromJson(photo))).toList();
-      data.addAll(result);
-      _photosStreamController.sink.add(data);
-    }
-    catch(e) {
-      _photosStreamController.sink.addError(e);
-    }
-    finally{
-      setState(() {
-        _isLoading = false;
-      });
-    }
-  }
+  var _bloc;
 
   @override
-  void initState(){
-    data.clear();
-    page = 1;
+  void initState() {
+    PhotoBloc().refresh();
     _scrollController.addListener(() {
       if (_scrollController.position.pixels ==
           _scrollController.position.maxScrollExtent) {
-          page++;
-        setState(() {
-          _isLoading = true;
-        });
-          _fetchPhotos();
+        _bloc.fetchAllPhotos();
       }
     });
-    _photosStreamController.onListen = _fetchPhotos;
-    WidgetsBinding.instance.addPostFrameCallback((_) => _refreshIndicatorKey.currentState.show());
+    WidgetsBinding.instance
+        .addPostFrameCallback((_) => _refreshIndicatorKey.currentState.show());
     super.initState();
   }
 
-
-
   @override
   Widget build(BuildContext context) {
+    _bloc = PhotoBloc(widget.url);
+    _bloc.fetchAllPhotos();
     return Scaffold(
-      appBar: AppBar(
-        title: Text(AppStrings().popularGalleryGridTitle,
-          style: TextStyle(color: AppColors.titleColor,)),
+        appBar: AppBar(
+          title: Text(widget.title,
+              style: TextStyle(
+                color: AppColors.titleColor,
+              )),
+          backgroundColor: Colors.white,
+          elevation: 0,
+        ),
         backgroundColor: Colors.white,
-        elevation: 0,
-      ),
-      backgroundColor: Colors.white,
-          body: StreamBuilder<List<Photo>>(
-            stream: _photosStreamController.stream,
-            builder:(context, snapshot){
-              if (snapshot.hasData || data.isNotEmpty){
-                return Column(
-                  children: <Widget> [
-                    Flexible(
-                      fit: FlexFit.loose,
-                      child: RefreshIndicator(
+        body: StreamBuilder<List<Photo>>(
+          stream: _bloc.allPhotos,
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              return Column(
+                children: <Widget>[
+                  Flexible(
+                    fit: FlexFit.loose,
+                    child: RefreshIndicator(
                       key: _refreshIndicatorKey,
-                      onRefresh: _refresh,
-                        child: CustomGridView().photoGridView(snapshot.data ?? data,_scrollController),
-                      ),
+                      onRefresh: () => _bloc.refresh(),
+                      child: PhotoGridView(snapshot.data, _scrollController),
                     ),
-                    Visibility(
-                      visible: _isLoading&&page<maxPage,
-                      child: Center(
-                        child: LinearProgressIndicator(),
-                      ),
-                    )
-                  ],
-                );
-              }
-              else if (snapshot.hasError) {
-                return NoInternetConnection().noInternetConnection();
-              }
-              return Center(
-                child: CircularProgressIndicator(),
+                  ),
+                ],
               );
-            },
-          )
-      );
+            } else if (snapshot.hasError) {
+              return NoInternetConnectionWidget();
+            }
+
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          },
+        ));
   }
 
-  Future<Null> _refresh() async{
-    await Future.delayed(Duration(milliseconds: 1000));
-    setState(() {
-      data.clear();
-      page = 1;
-      _fetchPhotos();
-    });
-  }
-
-
-    @override
+  @override
   void dispose() {
     super.dispose();
     _scrollController.dispose();
-    _photosStreamController?.close();
   }
 }

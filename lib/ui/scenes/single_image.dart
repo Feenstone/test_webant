@@ -70,7 +70,7 @@ class SingleImage extends StatelessWidget {
           SizedBox(height: 8,),
           Align(
             alignment: Alignment.centerLeft,
-            child: Text(photo['description']!= null? photo['description'] : ' '),
+            child: Text(photo['description']??= ' '),
           )
         ],
       )
