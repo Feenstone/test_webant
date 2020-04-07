@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:test_webant/resources/app_strings.dart';
 import 'package:test_webant/resources/app_colors.dart';
-import 'package:test_webant/ui/scenes/popular_gallery_grid.dart';
+import 'package:test_webant/ui/scenes/gallery_grid.dart';
 
 
 void main() => runApp(MyApp());

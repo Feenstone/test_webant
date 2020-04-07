@@ -75,7 +75,6 @@ class _GalleryGridState extends State<GalleryGrid> {
             } else if (snapshot.hasError) {
               return NoInternetConnectionWidget();
             }
-
             return Center(
               child: CircularProgressIndicator(),
             );
