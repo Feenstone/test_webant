@@ -15,7 +15,7 @@ class PhotoGridView extends StatelessWidget{
       return GridView.builder(
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2,
-          childAspectRatio: 180 / 128,
+          childAspectRatio: 166.21 / 166.21,
           mainAxisSpacing: 4.0,
           crossAxisSpacing: 4.0,
         ),
@@ -26,18 +26,18 @@ class PhotoGridView extends StatelessWidget{
             elevation: 5.7,
             clipBehavior: Clip.antiAliasWithSaveLayer,
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(10),
             ),
-            margin: EdgeInsets.all(8.0),
+            margin: EdgeInsets.all(6.0),
             child: GestureDetector(
               child: CachedNetworkImage(
-                imageUrl: (AppStrings().displayImageLink + data[index].image),
+                imageUrl: (data[index]["url"]),
                 fit: BoxFit.cover,
                 placeholder: (context, url) =>
                     Center(child: CircularProgressIndicator()),
                 errorWidget: (context, url, error) => Icon(Icons.error),
               ),
-              onTap: () => _navigateToImage(context, data[index].id),
+              onTap: () => _navigateToImage(context, data[index]),
             ),
           );
         },
@@ -46,10 +46,10 @@ class PhotoGridView extends StatelessWidget{
     }
   }
 
-  void _navigateToImage(BuildContext context, int id) {
+  void _navigateToImage(BuildContext context, dynamic data) {
    Navigator.of(context).push(
      MaterialPageRoute(
-       builder: (context) => SingleImage(imageId: id),
+       builder: (context) => SingleImage(data: data,),
      ),
    );
  }

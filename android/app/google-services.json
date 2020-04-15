@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "726272171050",
+    "firebase_url": "https://webantpractice.firebaseio.com",
+    "project_id": "webantpractice",
+    "storage_bucket": "webantpractice.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:726272171050:android:f1d597bc28341f8d9cf753",
+        "android_client_info": {
+          "package_name": "com.test_webant"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "726272171050-f6vt2e98flksme13bl1r2r46hibfbuaj.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDQ0ZTzoFRmpqfqmpLjC5UUdKFUC7IAhmQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "726272171050-f6vt2e98flksme13bl1r2r46hibfbuaj.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,18 +1,16 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:test_webant/resources/app_colors.dart';
-import 'package:test_webant/resources/app_strings.dart';
 import 'package:test_webant/ui/custom_widgets/no_internet_connection_widget.dart';
-import 'package:test_webant/models/photo_entity.dart';
+import 'package:test_webant/ui/custom_widgets/no_photos_screen.dart';
 import 'package:test_webant/ui/custom_widgets/photo_gridview.dart';
 import 'package:test_webant/bloc/photo_bloc.dart';
 
 class GalleryGrid extends StatefulWidget {
+  String galleryType;
 
- final String url;
- final String title;
-
-  GalleryGrid(this.url,this.title);
+  GalleryGrid(this.galleryType);
 
   @override
   State<StatefulWidget> createState() {
@@ -21,70 +19,61 @@ class GalleryGrid extends StatefulWidget {
 }
 
 class _GalleryGridState extends State<GalleryGrid> {
-  ScrollController _scrollController = new ScrollController();
-
-  final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
-      new GlobalKey<RefreshIndicatorState>();
-
-  var _bloc;
+  var photoBloc;
+  ScrollController _controller = ScrollController();
 
   @override
   void initState() {
-    PhotoBloc().refresh();
-    _scrollController.addListener(() {
-      if (_scrollController.position.pixels ==
-          _scrollController.position.maxScrollExtent) {
-        _bloc.fetchAllPhotos();
-      }
-    });
-    WidgetsBinding.instance
-        .addPostFrameCallback((_) => _refreshIndicatorKey.currentState.show());
     super.initState();
+    photoBloc = PhotoBloc();
+    photoBloc.fetchFirstList(widget.galleryType);
+
+    _controller.addListener(_scrollListener);
   }
 
   @override
   Widget build(BuildContext context) {
-    _bloc = PhotoBloc(widget.url);
-    _bloc.fetchAllPhotos();
     return Scaffold(
-        appBar: AppBar(
-          title: Text(widget.title,
-              style: TextStyle(
-                color: AppColors.titleColor,
-              )),
-          backgroundColor: Colors.white,
-          elevation: 0,
-        ),
         backgroundColor: Colors.white,
-        body: StreamBuilder<List<Photo>>(
-          stream: _bloc.allPhotos,
+        body: StreamBuilder<List<DocumentSnapshot>>(
+          stream: photoBloc.photoStream,
           builder: (context, snapshot) {
-            if (snapshot.hasData) {
+            if (snapshot.hasError) {
+              return NoInternetConnectionWidget();
+            } else if (snapshot.data?.length == 0) {
+              return NoPhotosScreen();
+            } else if (snapshot?.data == null) {
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation<Color>(AppColors.formFieldColor),
+                    ),
+                    Text("Loading..."),
+                  ],
+                ),
+              );
+            } else if (snapshot.data.length > 0) {
               return Column(
                 children: <Widget>[
                   Flexible(
                     fit: FlexFit.loose,
-                    child: RefreshIndicator(
-                      key: _refreshIndicatorKey,
-                      onRefresh: () => _bloc.refresh(),
-                      child: PhotoGridView(snapshot.data, _scrollController),
-                    ),
+                    child: PhotoGridView(snapshot.data, _controller),
                   ),
                 ],
               );
-            } else if (snapshot.hasError) {
-              return NoInternetConnectionWidget();
             }
-            return Center(
-              child: CircularProgressIndicator(),
-            );
+            return null;
           },
         ));
   }
 
-  @override
-  void dispose() {
-    super.dispose();
-    _scrollController.dispose();
+  void _scrollListener() {
+    if (_controller.offset >= _controller.position.maxScrollExtent &&
+        !_controller.position.outOfRange) {
+      photoBloc.fetchNextPhotos(widget.galleryType);
+    }
   }
 }
