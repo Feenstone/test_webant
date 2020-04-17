@@ -6,6 +6,8 @@ class Photo{
   String url;
   int watchCount;
   String uploadDate;
+  List tags;
+  String author;
 
-  Photo({this.description,this.name,this.type,this.url, this.watchCount, this.uploadDate});
+  Photo({this.description,this.name,this.type,this.url, this.watchCount, this.uploadDate, this.tags, this.author});
 }

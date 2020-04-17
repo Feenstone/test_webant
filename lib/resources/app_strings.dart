@@ -21,7 +21,24 @@ class AppStrings{
   final signUpButtonText = "Sign Up";
   final signInButtonText = "Sign In";
   final cancelButtonText = "Cancel";
+  final userNameHintText = "User Name";
+  final userNameValidatorText = "username should contain 5 or more letters";
+  final birthDayText = "Birthday";
+  final birthDayValidatorText = "you are too young for that";
+  final emailHintText = "Email";
+  final emailValidatorText = "enter an email";
+  final passwordHintText = "Password";
+  final passwordValidatorText = "use at least 1 capital letter";
+  final passwordConfirmHintText = "Confirm password";
+  final passwordConfirmValidatorText = "passwords doesnt match";
+  final errorSignInMessage = "Could not sign in with those credentials";
+  final searchBarHintText = "Search";
+  final nextButtonText = "Next";
+  final addButtonText = "Add";
+  final preloaderText = "Loading...";
+  final imageNameHintText = "Name";
   static const firstBottomNavigationBarItemTitle = "New";
   static const secondBottomNavigationBarItemTitle = "Popular";
+
 
 }

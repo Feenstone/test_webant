@@ -2,11 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:test_webant/Resources/app_strings.dart';
 import 'package:test_webant/Ui/Scenes/single_image.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:test_webant/services/database.dart';
 
 class PhotoGridView extends StatelessWidget{
 
-  var data;
-  var scrollController;
+  final data;
+  final scrollController;
 
   PhotoGridView(this.data,this.scrollController);
 
@@ -37,7 +38,19 @@ class PhotoGridView extends StatelessWidget{
                     Center(child: CircularProgressIndicator()),
                 errorWidget: (context, url, error) => Icon(Icons.error),
               ),
-              onTap: () => _navigateToImage(context, data[index]),
+              onTap: () async {
+                int watchCount = data[index]['watchCount'];
+                watchCount++;
+                if(watchCount >= 10){
+                 await DatabaseService().photoCollection.document(data[index]['name']).updateData(<String,dynamic>{
+                    "type": "popular"
+                  });
+                }
+                    await DatabaseService().photoCollection.document(data[index]['name']).updateData(<String,dynamic>{
+                  "watchCount": watchCount
+                });
+                _navigateToImage(context, data[index]);
+              },
             ),
           );
         },
@@ -45,6 +58,8 @@ class PhotoGridView extends StatelessWidget{
       );
     }
   }
+
+
 
   void _navigateToImage(BuildContext context, dynamic data) {
    Navigator.of(context).push(

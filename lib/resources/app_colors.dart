@@ -11,4 +11,6 @@ class AppColors{
   static const buttonColor = Color(0xFF1D1D1D);
   static const appBarButtonColor = Color(0xFFCF497E);
   static const createPhotoScreenBackground = Color(0xFFF3F3F3);
+  static const appBarIconColor = Color(0xFFDADADA);
+  static const cancelButtonColor =Color(0xFF5F5F5F);
 }

@@ -1,10 +1,6 @@
-import 'dart:io';
-
 import "package:flutter/material.dart";
-import 'package:image_picker/image_picker.dart';
 import 'package:test_webant/resources/app_colors.dart';
 import 'package:test_webant/resources/app_strings.dart';
-import 'package:test_webant/ui/scenes/create_photo_screen.dart';
 import 'package:test_webant/ui/scenes/sign_in_screen.dart';
 import 'package:test_webant/ui/scenes/sign_up_screen.dart';
 
@@ -97,48 +93,7 @@ class BlackSignInButton extends StatelessWidget {
     );
   }
 }
-//
-//class BlackSignUpButton extends StatelessWidget {
-//
-//  GlobalKey _formkey = GlobalKey<FormState>();
-//
-//
-//
-//  @override
-//  Widget build(BuildContext context) {
-//    return Form(
-//      key: _formkey,
-//      child: Center(
-//        child: Container(
-//          height: 36,
-//          width: 120,
-//          child: RaisedButton(
-//            elevation: 0,
-//            key: _formkey,
-//            shape:
-//            RoundedRectangleBorder(borderRadius: BorderRadius.circular(4.0)),
-//            color: AppColors.buttonColor,
-//            onPressed: () {
-//              if (_formkey.currentState.validate()) {
-//                Scaffold.of(context)
-//                    .showSnackBar(SnackBar(content: Text('Processing Data')));
-//              }
-//            },
-//            child: Text(
-//              AppStrings().signUpButtonText,
-//              style: TextStyle(
-//                color: Colors.white,
-//                fontSize: 17,
-//                fontWeight: FontWeight.bold,
-//                fontStyle: FontStyle.normal,
-//              ),
-//            ),
-//          ),
-//        ),
-//      ),
-//    );
-//  }
-//}
+
 
 class WhiteSignInButton extends StatelessWidget {
 
@@ -154,7 +109,10 @@ class WhiteSignInButton extends StatelessWidget {
           ),
           elevation: 0,
           color: Colors.white,
-          onPressed: () {},
+          onPressed: () {
+            Navigator.pushReplacement(context, MaterialPageRoute(
+                builder: (context) => SignInScreen()),);
+          },
           child: Text(
             AppStrings().signInButtonText,
             style: TextStyle(
@@ -184,7 +142,10 @@ class WhiteSignUpButton extends StatelessWidget {
           ),
           elevation: 0,
           color: Colors.white,
-          onPressed: () {},
+          onPressed: () {
+            Navigator.pushReplacement(context, MaterialPageRoute(
+                builder: (context) => SignUpScreen()),);
+          },
           child: Text(
             AppStrings().signUpButtonText,
             style: TextStyle(
@@ -199,42 +160,3 @@ class WhiteSignUpButton extends StatelessWidget {
     );
   }
 }
-
-//class SelectPhotoButton extends StatefulWidget {
-//  @override
-//  _SelectPhotoButtonState createState() => _SelectPhotoButtonState();
-//}
-//
-//class _SelectPhotoButtonState extends State<SelectPhotoButton> {
-//  @override
-//  Widget build(BuildContext context) {
-//    return Container(
-//      height: 36,
-//      margin: EdgeInsets.fromLTRB(16, 40, 16, 10),
-//      decoration: BoxDecoration(
-//          border: Border.all(color: Colors.black)
-//      ),
-//      child: RaisedButton(
-//        elevation: 0,
-//        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4.0)),
-//        color: Colors.white,
-//        onPressed: () => _pickImage(ImageSource.gallery),
-//        child: Text(
-//          'Select Photo',
-//          style: TextStyle(
-//            color: Colors.black,
-//            fontSize: 14,
-//          ),
-//        ),
-//      ),
-//    );
-//  }
-//
-//  Future<void> _pickImage(ImageSource source) async {
-//    File selected = await ImagePicker.pickImage(source: source);
-//
-//    setState(() {
-//      CreatePhotoScreen()._imageSource = selected;
-//    });
-//  }
-//}

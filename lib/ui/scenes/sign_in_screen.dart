@@ -1,11 +1,12 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:test_webant/resources/app_colors.dart';
 import 'package:test_webant/resources/app_strings.dart';
 import 'package:test_webant/services/auth.dart';
+import 'package:test_webant/text_input_assist/focus_change.dart';
 import 'package:test_webant/ui/custom_widgets/custom_app_bar.dart';
 import 'package:test_webant/ui/custom_widgets/custom_buttons.dart';
 import 'package:test_webant/ui/scenes/main_screen.dart';
-import 'package:test_webant/ui/scenes/split_gallery_screen.dart';
 import 'dart:developer' as developer;
 
 class SignInScreen extends StatefulWidget {
@@ -20,6 +21,7 @@ class _SignInScreenState extends State<SignInScreen> {
   String _email = '';
   String _password = '';
   String _error = '';
+  RegExp exp = RegExp(r"(?!^.*[A-Z]{2,}.*$)^[A-Za-z]*$");
 
   bool _obscuredPassword = true;
 
@@ -34,6 +36,7 @@ class _SignInScreenState extends State<SignInScreen> {
       body: Form(
         key: _formkey,
         child: Container(
+          margin: EdgeInsets.only(left: 16, right: 16),
           child: ListView(
             children: <Widget>[
               SizedBox(
@@ -53,53 +56,53 @@ class _SignInScreenState extends State<SignInScreen> {
               SizedBox(
                 height: 50,
               ),
-              Container(
-                height: 36,
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(4),
-                    border: Border.all(color: AppColors.formFieldColor)),
-                margin: EdgeInsets.fromLTRB(16, 0, 16, 30),
-                padding: EdgeInsets.symmetric(horizontal: 20.0),
-                child: TextFormField(
-                  focusNode: _emailFocus,
-                  textInputAction: TextInputAction.next,
-                  style: TextStyle(color: Colors.black),
-                  decoration: InputDecoration(
-                      hintText: "Email",
-                      hintStyle: TextStyle(
-                          color: AppColors.formFieldColor, fontSize: 17),
-                      border: InputBorder.none,
-                      suffixIcon: Icon(
-                        Icons.mail_outline,
-                        color: AppColors.formFieldColor,
-                      )),
-                  validator: (val) =>
-                      !val.contains('@') ? 'enter an email' : null,
-                  onChanged: (val) {
-                    setState(() => _email = val);
-                  },
-                  onFieldSubmitted: (term) {
-                    _fieldFocusChange(context, _emailFocus, _passwordFocus);
-                  },
-                ),
+              TextFormField(
+                focusNode: _emailFocus,
+                textInputAction: TextInputAction.next,
+                style: TextStyle(color: Colors.black),
+                decoration: InputDecoration(
+                    hintText: AppStrings().emailHintText,
+                    hintStyle: TextStyle(
+                        color: AppColors.formFieldColor, fontSize: 17),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    contentPadding:
+                        EdgeInsets.symmetric(vertical: 6, horizontal: 10),
+                    suffixIcon: Icon(
+                      Icons.mail_outline,
+                      color: AppColors.formFieldColor,
+                    )),
+                validator: (val) =>
+                    !val.contains('@') ? AppStrings().emailValidatorText : null,
+                onChanged: (val) {
+                  setState(() => _email = val);
+                },
+                onFieldSubmitted: (term) {
+                  FocusChange()
+                      .fieldFocusChange(context, _emailFocus, _passwordFocus);
+                },
               ),
-              Container(
-                height: 36,
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(4),
-                    border: Border.all(color: AppColors.formFieldColor)),
-                margin: EdgeInsets.fromLTRB(16, 0, 16, 30),
-                padding: EdgeInsets.symmetric(horizontal: 20.0),
-                child: TextFormField(
+              SizedBox(
+                height: 30,
+              ),
+              TextFormField(
                   focusNode: _passwordFocus,
                   obscureText: _obscuredPassword,
                   textInputAction: TextInputAction.next,
                   style: TextStyle(color: Colors.black),
+                  validator: (val) => (exp.hasMatch(val) && val.length < 8)
+                      ? AppStrings().passwordValidatorText
+                      : null,
                   decoration: InputDecoration(
-                      hintText: "Password",
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      contentPadding:
+                          EdgeInsets.symmetric(vertical: 6, horizontal: 10),
+                      hintText: AppStrings().passwordHintText,
                       hintStyle: TextStyle(
                           color: AppColors.formFieldColor, fontSize: 17),
-                      border: InputBorder.none,
                       suffixIcon: InkWell(
                         onTap: () {
                           setState(() {
@@ -114,28 +117,7 @@ class _SignInScreenState extends State<SignInScreen> {
                   onChanged: (val) {
                     setState(() => _password = val);
                   },
-                  onFieldSubmitted: (term) async {
-                    _passwordFocus.unfocus();
-                    if (_formkey.currentState.validate()) {
-                      dynamic result = await _auth.signInWithEmailAndPassword(
-                          _email, _password);
-                      developer.log(result.toString());
-                      if (result == null) {
-                        setState(() {
-                          _error = ('Could not sign in with those credentials');
-                        });
-                      } else {
-                        Navigator.pushAndRemoveUntil(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => SplitGalleryScreen()),
-                          (Route<dynamic> route) => false,
-                        );
-                      }
-                    }
-                  },
-                ),
-              ),
+                  onFieldSubmitted: (term) => signInComplete()),
               SizedBox(
                 height: 50,
               ),
@@ -148,26 +130,7 @@ class _SignInScreenState extends State<SignInScreen> {
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(4.0)),
                     color: AppColors.buttonColor,
-                    onPressed: () async {
-                      if (_formkey.currentState.validate()) {
-                        dynamic result = await _auth.signInWithEmailAndPassword(
-                            _email, _password);
-                        developer.log(result.toString());
-                        if (result == null) {
-                          setState(() {
-                            _error =
-                                ('Could not sign in with those credentials');
-                          });
-                        } else {
-                          Navigator.pushAndRemoveUntil(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => MainScreen()),
-                            (Route<dynamic> route) => false,
-                          );
-                        }
-                      }
-                    },
+                    onPressed: () => signInComplete(),
                     child: Text(
                       AppStrings().signInButtonText,
                       style: TextStyle(
@@ -184,6 +147,12 @@ class _SignInScreenState extends State<SignInScreen> {
                 height: 10,
               ),
               WhiteSignUpButton(),
+              Center(
+                child: Text(
+                  _error,
+                  style: TextStyle(color: Colors.red, fontSize: 14),
+                ),
+              )
             ],
           ),
         ),
@@ -191,9 +160,22 @@ class _SignInScreenState extends State<SignInScreen> {
     );
   }
 
-  _fieldFocusChange(
-      BuildContext context, FocusNode currentFocus, FocusNode nextFocus) {
-    currentFocus.unfocus();
-    FocusScope.of(context).requestFocus(nextFocus);
+  Future<void> signInComplete() async {
+    if (_formkey.currentState.validate()) {
+      dynamic result =
+          await _auth.signInWithEmailAndPassword(_email, _password);
+      developer.log(result.toString());
+      if (result == null) {
+        setState(() {
+          _error = AppStrings().errorSignInMessage;
+        });
+      } else {
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => MainScreen()),
+          (Route<dynamic> route) => false,
+        );
+      }
+    }
   }
 }

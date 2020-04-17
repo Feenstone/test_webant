@@ -1,14 +1,17 @@
 import 'dart:io';
 import 'dart:ui';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:path/path.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:test_webant/resources/app_colors.dart';
-import 'package:test_webant/services/auth.dart';
+import 'package:test_webant/resources/app_strings.dart';
 import 'package:test_webant/services/database.dart';
 import 'package:test_webant/ui/scenes/add_photo_information_screen.dart';
 import 'dart:developer' as developer;
 import 'package:intl/intl.dart';
+import 'package:test_webant/ui/scenes/user_redactor_screen.dart';
 
 class GalleryAppBar extends StatefulWidget implements PreferredSizeWidget {
   final double _prefferedHeigt = 140;
@@ -45,20 +48,18 @@ class _GalleryAppBarState extends State<GalleryAppBar> {
                 textInputAction: TextInputAction.done,
                 style: TextStyle(color: Colors.black),
                 decoration: InputDecoration(
-                    hintText: "Search",
+                    hintText: AppStrings().searchBarHintText,
                     hintStyle: TextStyle(
                         color: AppColors.formFieldColor, fontSize: 17),
                     border: InputBorder.none,
                     prefixIcon: Icon(
                       Icons.search,
-                      color: Color(0xFFDADADA),
+                      color: AppColors.appBarIconColor,
                     ),
                     suffixIcon: Icon(
                       Icons.mic,
-                      color: Color(0xFFDADADA),
+                      color: AppColors.appBarIconColor,
                     )),
-                validator: (val) =>
-                    !val.contains('@') ? 'enter an email' : null,
                 onChanged: (val) {
                   setState(() => _searchText = val);
                 },
@@ -68,17 +69,17 @@ class _GalleryAppBarState extends State<GalleryAppBar> {
           TabBar(
             tabs: <Tab>[
               Tab(
-                text: 'New',
+                text: AppStrings().newGalleryGridTitle,
               ),
               Tab(
-                text: 'Popular',
+                text: AppStrings().popularGalleryGridTitle,
               )
             ],
             labelColor: Colors.black,
             controller: widget.tabController,
             unselectedLabelStyle: TextStyle(color: AppColors.formFieldColor, fontSize: 17),
             labelStyle: TextStyle(fontSize: 17),
-            indicatorColor: Color(0xFFCF497E),
+              indicatorColor: AppColors.appBarButtonColor,
           ),
         ],
       ),
@@ -104,7 +105,7 @@ class _GallerySignInAppBarState extends State<GallerySignInAppBar> {
       decoration: BoxDecoration(
         border: Border(
             bottom: (BorderSide(
-          color: Color(0xFFC4C4C4),
+          color: AppColors.formFieldColor,
         ))),
         color: Colors.white,
       ),
@@ -119,12 +120,10 @@ class _GallerySignInAppBarState extends State<GallerySignInAppBar> {
               color: Colors.white,
               elevation: 0.0,
               child: Text(
-                "Cancel",
+                AppStrings().cancelButtonText,
                 textAlign: TextAlign.right,
                 style: TextStyle(
-                  color: Color(
-                    0xFF5F5F5F,
-                  ),
+                  color: AppColors.cancelButtonColor,
                   fontSize: 15,
                 ),
               ),
@@ -148,7 +147,7 @@ class CreatePhotoAppBar extends StatelessWidget implements PreferredSizeWidget {
       decoration: BoxDecoration(
         border: Border(
             bottom: (BorderSide(
-              color: Color(0xFFC4C4C4),
+              color: AppColors.formFieldColor,
             ))),
         color: Colors.white,
       ),
@@ -163,7 +162,7 @@ class CreatePhotoAppBar extends StatelessWidget implements PreferredSizeWidget {
               color: Colors.white,
               elevation: 0.0,
               child: Text(
-                "Next",
+                AppStrings().nextButtonText,
                 textAlign: TextAlign.right,
                 style: TextStyle(
                   color: AppColors.appBarButtonColor,
@@ -181,7 +180,6 @@ class CreatePhotoAppBar extends StatelessWidget implements PreferredSizeWidget {
   }
 
   @override
-  // TODO: implement preferredSize
   Size get preferredSize => Size.fromHeight(_prefferedHeigt);
 }
 
@@ -194,16 +192,18 @@ class AddPhotoInformationAppBar extends StatelessWidget implements PreferredSize
   String _description;
   DateTime _uploadDateTime;
   var user;
+  var tags;
 
-  AddPhotoInformationAppBar(this._imageSource, this._name,this._description);
+  AddPhotoInformationAppBar(this._imageSource, this._name,this._description, this.tags,);
 
   @override
   Widget build(BuildContext context) {
+    var user = Provider.of<FirebaseUser>(context);
     return Container(
       decoration: BoxDecoration(
         border: Border(
             bottom: (BorderSide(
-              color: Color(0xFFC4C4C4),
+              color: AppColors.formFieldColor,
             ))),
         color: Colors.white,
       ),
@@ -231,7 +231,7 @@ class AddPhotoInformationAppBar extends StatelessWidget implements PreferredSize
                       color: Colors.white,
                       elevation: 0.0,
                       child: Text(
-                        "Add",
+                        AppStrings().addButtonText,
                         textAlign: TextAlign.right,
                         style: TextStyle(
                           color: AppColors.appBarButtonColor,
@@ -239,12 +239,20 @@ class AddPhotoInformationAppBar extends StatelessWidget implements PreferredSize
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      onPressed: () async{
-                        _uploadDateTime = DateTime.now();
-                        final StorageReference firebaseStorageRef = FirebaseStorage.instance.ref().child(basename(_imageSource.path));
-                        final StorageUploadTask task = firebaseStorageRef.putFile(_imageSource);
-                        String downloadUrl = await (await task.onComplete).ref.getDownloadURL();
-                        DatabaseService().createPhotoData(_name, _description, downloadUrl,DateFormat("dd-MM-yyyy").format(_uploadDateTime));
+                      onPressed: () async {
+                          developer.log(user.toString());
+                          _uploadDateTime = DateTime.now();
+                          final StorageReference firebaseStorageRef = FirebaseStorage
+                              .instance.ref().child(
+                              basename(_imageSource.path));
+                          final StorageUploadTask task = firebaseStorageRef
+                              .putFile(_imageSource);
+                          String downloadUrl = await (await task.onComplete).ref
+                              .getDownloadURL();
+                          DatabaseService().createPhotoData(
+                              _name, _description, downloadUrl,
+                              DateFormat("dd-MM-yyyy").format(_uploadDateTime),
+                              tags, user.email);
                       }
                   )),
             ),
@@ -256,4 +264,54 @@ class AddPhotoInformationAppBar extends StatelessWidget implements PreferredSize
   @override
   Size get preferredSize => Size.fromHeight(_prefferedHeigt);
 }
+
+class UserInformationAppBar extends StatelessWidget implements PreferredSizeWidget {
+
+  final double _prefferedHeigt = 88;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        border: Border(
+            bottom: (BorderSide(
+              color: AppColors.formFieldColor,
+            ))),
+        color: Colors.white,
+      ),
+      height: _prefferedHeigt,
+      child: Row(
+        children: <Widget>[
+          Align(
+              alignment: Alignment.bottomLeft,
+              child: Container(
+                margin: EdgeInsets.fromLTRB(20,0,0,16),
+                child: InkWell(
+                  child: Icon(Icons.arrow_back_ios,
+                    size: 18,),
+                  onTap: () => Navigator.pop(context),
+                ),
+              )),
+          Spacer(flex: 1,),
+          Align(
+            alignment: Alignment.bottomRight,
+            child: Container(
+              margin: EdgeInsets.fromLTRB(0,0,20,16),
+              child: InkWell(
+                onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => UserRedactorScreen()),),
+                child: Icon(Icons.settings),
+              ) ,
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+  @override
+  Size get preferredSize => Size.fromHeight(_prefferedHeigt);
+}
+
+
+
 

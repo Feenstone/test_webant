@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:test_webant/resources/app_colors.dart';
+import 'package:test_webant/resources/app_strings.dart';
 import 'package:test_webant/ui/custom_widgets/no_internet_connection_widget.dart';
 import 'package:test_webant/ui/custom_widgets/no_photos_screen.dart';
 import 'package:test_webant/ui/custom_widgets/photo_gridview.dart';
@@ -19,13 +20,13 @@ class GalleryGrid extends StatefulWidget {
 }
 
 class _GalleryGridState extends State<GalleryGrid> {
-  var photoBloc;
+  final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey = new GlobalKey<RefreshIndicatorState>();
+  var photoBloc = PhotoBloc();
   ScrollController _controller = ScrollController();
 
   @override
   void initState() {
     super.initState();
-    photoBloc = PhotoBloc();
     photoBloc.fetchFirstList(widget.galleryType);
 
     _controller.addListener(_scrollListener);
@@ -51,16 +52,20 @@ class _GalleryGridState extends State<GalleryGrid> {
                     CircularProgressIndicator(
                       valueColor: AlwaysStoppedAnimation<Color>(AppColors.formFieldColor),
                     ),
-                    Text("Loading..."),
+                    Text(AppStrings().preloaderText),
                   ],
                 ),
               );
             } else if (snapshot.data.length > 0) {
               return Column(
                 children: <Widget>[
-                  Flexible(
-                    fit: FlexFit.loose,
-                    child: PhotoGridView(snapshot.data, _controller),
+                  RefreshIndicator(
+                    key: _refreshIndicatorKey,
+                    onRefresh: () async => photoBloc.documentListClear(widget.galleryType),
+                    child: Flexible(
+                      fit: FlexFit.loose,
+                      child: PhotoGridView(snapshot.data, _controller),
+                    ),
                   ),
                 ],
               );
