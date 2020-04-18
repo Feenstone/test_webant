@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:test_webant/resources/app_colors.dart';
+import 'package:test_webant/resources/app_strings.dart';
 import 'package:test_webant/services/auth.dart';
 import 'package:test_webant/ui/custom_widgets/custom_app_bar.dart';
 import 'package:flutter_tags/flutter_tags.dart';
@@ -63,7 +64,7 @@ class _AddPhotoInformationScreenState extends State<AddPhotoInformationScreen> {
                           textInputAction: TextInputAction.next,
                           style: TextStyle(color: Colors.black),
                           decoration: InputDecoration(
-                            hintText: "Name",
+                            hintText: AppStrings().imageNameHintText,
                             hintStyle: TextStyle(
                                 color: AppColors.formFieldColor, fontSize: 17),
                             border: InputBorder.none,
@@ -74,7 +75,7 @@ class _AddPhotoInformationScreenState extends State<AddPhotoInformationScreen> {
                             });
                         },
                         validator: (val) =>
-                        val.isEmpty ? 'Add name to your image' : null,
+                        val.isEmpty ? AppStrings().imageValidatorText : null,
                       ),
                     ),
                     Container(
@@ -87,7 +88,7 @@ class _AddPhotoInformationScreenState extends State<AddPhotoInformationScreen> {
                           style: TextStyle(color: Colors.black),
                           maxLines: 4,
                           decoration: InputDecoration(
-                            hintText: "Description",
+                            hintText: AppStrings().imageDescriptionText,
                             hintStyle: TextStyle(
                                 color: AppColors.formFieldColor, fontSize: 17),
                             border: InputBorder.none,

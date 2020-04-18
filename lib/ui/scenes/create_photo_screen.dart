@@ -40,7 +40,7 @@ class _CreatePhotoScreenState extends State<CreatePhotoScreen> {
                 color: Colors.white,
                 onPressed: () => _pickImage(ImageSource.gallery),
                 child: Text(
-                  'Select Photo',
+                  AppStrings().selectImageButtonText,
                   style: TextStyle(
                     color: Colors.black,
                     fontSize: 14,

@@ -9,7 +9,7 @@ import 'package:test_webant/ui/custom_widgets/photo_gridview.dart';
 import 'package:test_webant/bloc/photo_bloc.dart';
 
 class GalleryGrid extends StatefulWidget {
-  String galleryType;
+  final String galleryType;
 
   GalleryGrid(this.galleryType);
 

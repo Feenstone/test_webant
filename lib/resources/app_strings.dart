@@ -37,6 +37,9 @@ class AppStrings{
   final addButtonText = "Add";
   final preloaderText = "Loading...";
   final imageNameHintText = "Name";
+  final imageValidatorText = "Add name to your image";
+  final imageDescriptionText = "Description";
+  final selectImageButtonText = "Select image";
   static const firstBottomNavigationBarItemTitle = "New";
   static const secondBottomNavigationBarItemTitle = "Popular";
 

@@ -67,6 +67,10 @@ class CreateAccountButton extends StatelessWidget {
 
 class BlackSignInButton extends StatelessWidget {
 
+  final VoidCallback pressedCallBack;
+
+  BlackSignInButton({this.pressedCallBack});
+
   @override
   Widget build(BuildContext context) {
     return Center(
@@ -78,7 +82,7 @@ class BlackSignInButton extends StatelessWidget {
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(4.0)),
           color: AppColors.buttonColor,
-          onPressed: () {},
+          onPressed: () async => pressedCallBack(),
           child: Text(
             AppStrings().signInButtonText,
             style: TextStyle(
@@ -160,3 +164,35 @@ class WhiteSignUpButton extends StatelessWidget {
     );
   }
 }
+
+class BlackSignUpButton extends StatelessWidget {
+
+ final VoidCallback pressedCallBack;
+
+ BlackSignUpButton({this.pressedCallBack});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 36,
+      width: 120,
+      child: RaisedButton(
+        elevation: 0,
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(4.0)),
+        color: AppColors.buttonColor,
+        onPressed: () async => pressedCallBack(),
+        child: Text(
+          AppStrings().signUpButtonText,
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 17,
+            fontWeight: FontWeight.bold,
+            fontStyle: FontStyle.normal,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
