@@ -209,62 +209,59 @@ class _PasswordTextFormFieldState extends State<PasswordTextFormField> {
   }
 }
 
-//class PasswordConfirmTextFormField extends StatefulWidget {
-//  @override
-//  _PasswordConfirmTextFormFieldState createState() =>
-//      _PasswordConfirmTextFormFieldState();
-//
-//  final StringValue callback;
-//
-//  final VoidCallback confirmCallBack;
-//
-//  final String passwordText;
-//
-//  final ValueChanged<StringValue> onValueChanged;
-//
-//  PasswordConfirmTextFormField({@required this.callback,@required this.confirmCallBack,@required this.passwordText, @required this.onValueChanged});
-//}
-//
-//class _PasswordConfirmTextFormFieldState
-//    extends State<PasswordConfirmTextFormField> {
-//  bool _obscuredPassword = true;
-//
-//  @override
-//  Widget build(BuildContext context) {
-//    widget.onValueChanged();
-//    return TextFormField(
-//      maxLines: 1,
-//      obscureText: _obscuredPassword,
-//      focusNode: _passwordConfirmFocus,
-//      textInputAction: TextInputAction.done,
-//      style: TextStyle(color: Colors.black),
-//      decoration: InputDecoration(
-//          contentPadding: EdgeInsets.symmetric(vertical: 6, horizontal: 5),
-//          hintText: AppStrings().passwordConfirmHintText,
-//          hintStyle: TextStyle(color: AppColors.formFieldColor, fontSize: 17),
-//          border: OutlineInputBorder(
-//            borderRadius: BorderRadius.circular(4),
-//          ),
-//          suffixIcon: InkWell(
-//            onTap: () {
-//              setState(() {
-//                _obscuredPassword = !_obscuredPassword;
-//              });
-//            },
-//            child: Icon(
-//              Icons.remove_red_eye,
-//              color: AppColors.formFieldColor,
-//            ),
-//          )),
-//      validator: (val) =>
-//          val != widget.passwordText ? AppStrings().passwordConfirmValidatorText : null,
-//      onChanged: (val) {
-//        setState(() => widget.callback(val));
-//      },
-//      onFieldSubmitted: (val) async => widget.confirmCallBack(),
-//    );
-//  }
-//}
+class PasswordConfirmTextFormField extends StatefulWidget {
+  @override
+  _PasswordConfirmTextFormFieldState createState() =>
+      _PasswordConfirmTextFormFieldState();
+
+  final StringValue callback;
+
+  final VoidCallback confirmCallBack;
+
+  final String passwordText;
+
+  PasswordConfirmTextFormField({@required this.callback,@required this.confirmCallBack,@required this.passwordText,});
+}
+
+class _PasswordConfirmTextFormFieldState
+    extends State<PasswordConfirmTextFormField> {
+  bool _obscuredPassword = true;
+
+  @override
+  Widget build(BuildContext context) {
+    return TextFormField(
+      maxLines: 1,
+      obscureText: _obscuredPassword,
+      focusNode: _passwordConfirmFocus,
+      textInputAction: TextInputAction.done,
+      style: TextStyle(color: Colors.black),
+      decoration: InputDecoration(
+          contentPadding: EdgeInsets.symmetric(vertical: 6, horizontal: 5),
+          hintText: AppStrings().passwordConfirmHintText,
+          hintStyle: TextStyle(color: AppColors.formFieldColor, fontSize: 17),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(4),
+          ),
+          suffixIcon: InkWell(
+            onTap: () {
+              setState(() {
+                _obscuredPassword = !_obscuredPassword;
+              });
+            },
+            child: Icon(
+              Icons.remove_red_eye,
+              color: AppColors.formFieldColor,
+            ),
+          )),
+      validator: (val) =>
+          val != widget.passwordText ? AppStrings().passwordConfirmValidatorText : null,
+      onChanged: (val) {
+        setState(() => widget.callback(val));
+      },
+      onFieldSubmitted: (val) async => widget.confirmCallBack(),
+    );
+  }
+}
 
 class ImageNameTextFormField extends StatefulWidget {
 
