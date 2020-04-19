@@ -12,22 +12,18 @@ import 'package:test_webant/ui/scenes/main_screen.dart';
 class SignUpScreen extends StatefulWidget {
   @override
   _SignUpScreenState createState() => _SignUpScreenState();
-
-  final formkey = GlobalKey<FormState>();
 }
 
 class _SignUpScreenState extends State<SignUpScreen> {
   final _auth = AuthService();
 
-  final FocusNode _passwordConfirmFocus = FocusNode();
+  final _formkey = GlobalKey<FormState>();
 
-  String userName;
-  String birthday;
-  String email;
-  String password;
-  String passwordConfirm;
-
-  bool _obscuredPassword = true;
+  String _userName;
+  String _birthday;
+  String _email;
+  String _password;
+  String _passwordConfirm;
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +31,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       appBar: GallerySignInAppBar(),
       backgroundColor: Colors.white,
       body: Form(
-        key: widget.formkey,
+        key: _formkey,
         child: Container(
           margin: EdgeInsets.only(left: 16, right: 16),
           child: ListView(
@@ -57,26 +53,26 @@ class _SignUpScreenState extends State<SignUpScreen> {
               SizedBox(
                 height: 50,
               ),
-              UserNameTextFormField(callback: (val) => userName = val),
+              UserNameTextFormField(callback: (val) => _userName = val),
               SizedBox(
                 height: 30,
               ),
-              BirthdayTextFormField(callback: (val) => birthday = val),
+              BirthdayTextFormField(callback: (val) => _birthday = val),
               SizedBox(
                 height: 30,
               ),
-              EmailTextFormField(callback: (val) => email = val),
+              EmailTextFormField(callback: (val) => _email = val),
               SizedBox(
                 height: 30,
               ),
-              PasswordTextFormField(callback: (val) => password = val, inputAction: TextInputAction.next,),
+              PasswordTextFormField(callback: (val) => _password = val, inputAction: TextInputAction.next,),
               SizedBox(
                 height: 30,
               ),
               PasswordConfirmTextFormField(
-                callback: (val) => passwordConfirm = val,
+                callback: (val) => _passwordConfirm = val,
                 confirmCallBack: () async => signUpComplete(),
-                passwordText: password,
+                passwordText: _password,
               ),
               SizedBox(
                 height: 50,
@@ -97,9 +93,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
   }
 
   Future<void> signUpComplete() async {
-    if (widget.formkey.currentState.validate()) {
+    if (_formkey.currentState.validate()) {
       dynamic result = await _auth.registerWithEmailAndPassword(
-          email, password, userName, birthday);
+          _email, _password, _userName, _birthday);
       if (result == null) {
         setState(() {});
       } else {

@@ -40,6 +40,7 @@ class AppStrings{
   final imageValidatorText = "Add name to your image";
   final imageDescriptionText = "Description";
   final selectImageButtonText = "Select image";
+  final passwordLengthValidatorText = "password should be 8 or more letters long";
   static const firstBottomNavigationBarItemTitle = "New";
   static const secondBottomNavigationBarItemTitle = "Popular";
 

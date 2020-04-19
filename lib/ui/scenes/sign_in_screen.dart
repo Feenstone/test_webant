@@ -92,7 +92,6 @@ class _SignInScreenState extends State<SignInScreen> {
     if (_formkey.currentState.validate()) {
       dynamic result =
           await _auth.signInWithEmailAndPassword(_email, _password);
-      developer.log(result.toString());
       if (result == null) {
         setState(() {
           _error = AppStrings().errorSignInMessage;

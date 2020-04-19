@@ -1,17 +1,12 @@
 import 'dart:io';
 import 'dart:ui';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:path/path.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:test_webant/resources/app_colors.dart';
 import 'package:test_webant/resources/app_strings.dart';
-import 'package:test_webant/services/database.dart';
 import 'package:test_webant/ui/scenes/add_photo_information_screen.dart';
-import 'dart:developer' as developer;
-import 'package:intl/intl.dart';
 import 'package:test_webant/ui/scenes/user_redactor_screen.dart';
+
+typedef StringValue = String Function(String);
 
 class GalleryAppBar extends StatefulWidget implements PreferredSizeWidget {
   final double _prefferedHeigt = 140;
@@ -138,8 +133,8 @@ class CreatePhotoAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   final double _prefferedHeigt = 88;
 
-  final File _imageSource;
-  CreatePhotoAppBar(this._imageSource);
+  final File imageSource;
+  CreatePhotoAppBar({this.imageSource});
 
   @override
   Widget build(BuildContext context) {
@@ -154,7 +149,7 @@ class CreatePhotoAppBar extends StatelessWidget implements PreferredSizeWidget {
       height: _prefferedHeigt,
       child: Align(
         alignment: Alignment.bottomRight,
-        child: Container( 
+        child: Container(
             height: 46,
             width: 80,
             color: Colors.white,
@@ -170,13 +165,16 @@ class CreatePhotoAppBar extends StatelessWidget implements PreferredSizeWidget {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              onPressed: () => Navigator.push(
+              onPressed: () {
+              if(imageSource != null){
+                  Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => AddPhotoInformationScreen(_imageSource)),
-              )
+                MaterialPageRoute(builder: (context) => AddPhotoInformationScreen(imageSource)));
+                }
+              }
+              ),
             )),
-      ),
-    );
+      );
   }
 
   @override
@@ -187,18 +185,12 @@ class AddPhotoInformationAppBar extends StatelessWidget implements PreferredSize
 
   final double _prefferedHeigt = 88;
 
-  File _imageSource;
-  String _name;
-  String _description;
-  DateTime _uploadDateTime;
-  var user;
-  var tags;
+  final VoidCallback callback;
 
-  AddPhotoInformationAppBar(this._imageSource, this._name,this._description, this.tags,);
+  AddPhotoInformationAppBar({this.callback});
 
   @override
   Widget build(BuildContext context) {
-    var user = Provider.of<FirebaseUser>(context);
     return Container(
       decoration: BoxDecoration(
         border: Border(
@@ -240,19 +232,7 @@ class AddPhotoInformationAppBar extends StatelessWidget implements PreferredSize
                         ),
                       ),
                       onPressed: () async {
-                          developer.log(user.toString());
-                          _uploadDateTime = DateTime.now();
-                          final StorageReference firebaseStorageRef = FirebaseStorage
-                              .instance.ref().child(
-                              basename(_imageSource.path));
-                          final StorageUploadTask task = firebaseStorageRef
-                              .putFile(_imageSource);
-                          String downloadUrl = await (await task.onComplete).ref
-                              .getDownloadURL();
-                          DatabaseService().createPhotoData(
-                              _name, _description, downloadUrl,
-                              DateFormat("dd-MM-yyyy").format(_uploadDateTime),
-                              tags, user.email);
+                        callback();
                       }
                   )),
             ),
@@ -311,7 +291,3 @@ class UserInformationAppBar extends StatelessWidget implements PreferredSizeWidg
   @override
   Size get preferredSize => Size.fromHeight(_prefferedHeigt);
 }
-
-
-
-

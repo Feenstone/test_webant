@@ -1,13 +1,18 @@
 import 'dart:io';
 
+import 'package:path/path.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:test_webant/resources/app_colors.dart';
-import 'package:test_webant/resources/app_strings.dart';
-import 'package:test_webant/services/auth.dart';
+import 'package:test_webant/services/database.dart';
 import 'package:test_webant/ui/custom_widgets/custom_app_bar.dart';
 import 'package:flutter_tags/flutter_tags.dart';
+import 'dart:developer' as developer;
+
+import 'package:test_webant/ui/custom_widgets/custom_text_fields.dart';
 
 class AddPhotoInformationScreen extends StatefulWidget {
   final File _imageSource;
@@ -20,7 +25,6 @@ class AddPhotoInformationScreen extends StatefulWidget {
 }
 
 class _AddPhotoInformationScreenState extends State<AddPhotoInformationScreen> {
-
   List _tags = [];
 
   String _name;
@@ -28,15 +32,20 @@ class _AddPhotoInformationScreenState extends State<AddPhotoInformationScreen> {
 
   double _fontSize = 18;
 
+  DateTime _uploadDateTime;
+
+  final _formkey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
-    return StreamProvider<FirebaseUser>.value(
-      value: AuthService().user,
-      child: Scaffold(
-          backgroundColor: AppColors.createPhotoScreenBackground,
-          appBar: AddPhotoInformationAppBar(widget._imageSource, _name, _description, _tags,),
-          body: ListView(
+    var user = Provider.of<FirebaseUser>(context);
+    return Scaffold(
+        backgroundColor: AppColors.createPhotoScreenBackground,
+        appBar:
+            AddPhotoInformationAppBar(callback: () async => _uploadImage(user)),
+        body: Form(
+          key: _formkey,
+          child: ListView(
             children: <Widget>[
               SizedBox(
                 height: 62,
@@ -47,59 +56,15 @@ class _AddPhotoInformationScreenState extends State<AddPhotoInformationScreen> {
               ),
               Container(
                 height: 350,
-                decoration: BoxDecoration(color: Colors.white,
-                border: Border(
-                  top: BorderSide(color: AppColors.formFieldColor),
-                )),
+                decoration: BoxDecoration(
+                    color: Colors.white,
+                    border: Border(
+                      top: BorderSide(color: AppColors.formFieldColor),
+                    )),
                 child: Column(
                   children: <Widget>[
-                    Container(
-                      margin: EdgeInsets.fromLTRB(16, 10, 16, 10),
-                      decoration: BoxDecoration(
-                        border: Border.all(color: AppColors.formFieldColor),
-                        borderRadius: BorderRadius.circular(4)
-                      ),
-                      height: 36,
-                      child: TextFormField(
-                          textInputAction: TextInputAction.next,
-                          style: TextStyle(color: Colors.black),
-                          decoration: InputDecoration(
-                            hintText: AppStrings().imageNameHintText,
-                            hintStyle: TextStyle(
-                                color: AppColors.formFieldColor, fontSize: 17),
-                            border: InputBorder.none,
-                          ),
-                        onChanged: (val) {
-                            setState(() {
-                              _name = val;
-                            });
-                        },
-                        validator: (val) =>
-                        val.isEmpty ? AppStrings().imageValidatorText : null,
-                      ),
-                    ),
-                    Container(
-                      margin: EdgeInsets.fromLTRB(16, 0, 16, 25),
-                      decoration: BoxDecoration(color: Colors.white,
-                          border: Border.all(color: Color(0xFFC4C4C4)),
-                          borderRadius: BorderRadius.circular(4)),
-                      child: TextFormField(
-                          textInputAction: TextInputAction.next,
-                          style: TextStyle(color: Colors.black),
-                          maxLines: 4,
-                          decoration: InputDecoration(
-                            hintText: AppStrings().imageDescriptionText,
-                            hintStyle: TextStyle(
-                                color: AppColors.formFieldColor, fontSize: 17),
-                            border: InputBorder.none,
-                          ),
-                        onChanged: (val) {
-                          setState(() {
-                            _description = val;
-                          });
-                        },
-                      ),
-                    ),
+                    ImageNameTextFormField(callback: (val) => _name = val,),
+                    ImageDescriptionTextFormField(callback: (val) => _description = val,),
                     Tags(
                       key: _tagStateKey,
                       textField: TagsTextField(
@@ -108,21 +73,23 @@ class _AddPhotoInformationScreenState extends State<AddPhotoInformationScreen> {
                             setState(() {
                               _tags.add(str);
                             });
-                          }
-                      ),
+                          }),
                       itemCount: _tags.length,
-                      itemBuilder: (int index){
+                      itemBuilder: (int index) {
                         final item = _tags[index];
                         return ItemTags(
                           pressEnabled: false,
                           activeColor: AppColors.appBarButtonColor,
                           key: Key(index.toString()),
-                          index: index, // required
+                          index: index,
+                          // required
                           title: item,
-                          textStyle: TextStyle( fontSize: _fontSize, ),
+                          textStyle: TextStyle(
+                            fontSize: _fontSize,
+                          ),
                           combine: ItemTagsCombine.withTextBefore,
                           removeButton: ItemTagsRemoveButton(
-                            onRemoved: (){
+                            onRemoved: () {
                               setState(() {
                                 _tags.removeAt(index);
                               });
@@ -131,13 +98,29 @@ class _AddPhotoInformationScreenState extends State<AddPhotoInformationScreen> {
                           ), // OR null,
                         );
                       },
-                    )
+                    ),
                   ],
                 ),
               ),
             ],
-          )),
-    );
+          ),
+        ));
   }
+
+  Future<void> _uploadImage(user) async {
+    if (_formkey.currentState.validate()) {
+      developer.log(user.toString());
+      _uploadDateTime = DateTime.now();
+      final StorageReference firebaseStorageRef = FirebaseStorage.instance
+          .ref()
+          .child(basename(widget._imageSource.path));
+      final StorageUploadTask task =
+          firebaseStorageRef.putFile(widget._imageSource);
+      String downloadUrl = await (await task.onComplete).ref.getDownloadURL();
+      DatabaseService().createPhotoData(_name, _description, downloadUrl,
+          DateFormat("dd-MM-yyyy").format(_uploadDateTime), _tags, user.email);
+    }
+  }
+
   final GlobalKey<TagsState> _tagStateKey = GlobalKey<TagsState>();
 }
